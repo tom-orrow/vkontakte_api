@@ -1,6 +1,6 @@
 module VkontakteApi
   # Faraday middleware for logging requests and responses.
-  # 
+  #
   # It's behaviour depends on the logging options in the configuration.
   class Logger < Faraday::Response::Middleware
     # Creates a middleware instance.
@@ -9,7 +9,7 @@ module VkontakteApi
       super(app)
       @logger = VkontakteApi.logger
     end
-    
+
     # Logs the request if needed.
     # @param [Hash] env Request data.
     def call(env)
@@ -17,10 +17,10 @@ module VkontakteApi
         @logger.debug "#{env[:method].to_s.upcase} #{env[:url].to_s}"
         @logger.debug "body: #{env[:body].inspect}" unless env[:method] == :get
       end
-      
+
       super
     end
-    
+
     # Logs the response (successful or not) if needed.
     # @param [Hash] env Response data.
     def on_complete(env)
@@ -33,4 +33,6 @@ module VkontakteApi
   end
 end
 
-Faraday.register_middleware :response, vk_logger: VkontakteApi::Logger
+if Faraday.respond_to? :register_middleware
+  Faraday.register_middleware :response, vk_logger: VkontakteApi::Logger
+end
